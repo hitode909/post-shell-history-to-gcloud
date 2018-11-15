@@ -1,0 +1,7 @@
+{
+  "name": "post-shell-history",
+  "version": "0.0.1",
+  "dependencies": {
+    "@google-cloud/datastore": "2.0.0"
+  }
+}

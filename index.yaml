@@ -1,0 +1,6 @@
+indexes:
+- kind: History
+  properties:
+  - name: pwd
+  - name: timestamp
+    direction: desc
