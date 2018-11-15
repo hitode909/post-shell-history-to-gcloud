@@ -5,9 +5,7 @@ exports.accept = (req, res) => {
     return;
   }
 
-  const datastore = require('@google-cloud/datastore')({
-    projectId: 'shell-history',
-  });
+  const datastore = require('@google-cloud/datastore')();
 
   if (req.method === 'POST') {
     const key = datastore.key('History');
