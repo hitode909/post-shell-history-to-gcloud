@@ -17,3 +17,9 @@ function peco-history-selection-from-remote() {
     CURSOR=$#BUFFER
     zle reset-prompt
 }
+
+function peco-history-selection-from-remote-all() {
+    BUFFER=`curl --silent "$POST_SHELL_HISTORY_APIROOT/accept?apikey=${POST_SHELL_HISTORY_APIKEY}" | jq --raw-output 'map(.command) | join("\n")' | peco`
+    CURSOR=$#BUFFER
+    zle reset-prompt
+}
