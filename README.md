@@ -45,12 +45,17 @@ Set environment variables and load hooks.
 ```
 export POST_EHSLL_HISTTORY_APIROOT=https://***.cloudfunctions.net
 export POST_SHELL_HISTORY_APIKEY=***
-source ~/dev/github.com/hitode909/post-shell-history/hooks.sh
+source ~/dev/github.com/hitode909/post-shell-history-to-gcloud/hooks.sh
 ```
 
 Set the key to execute complement.
 
 ```
+# Fetch history from current directory
 zle -N peco-history-selection-from-remote
-bindkey '^T' peco-history-selection-from-remote
+bindkey '^R' peco-history-selection-from-remote
+
+# Fetch history from all directories
+zle -N peco-history-selection-from-remote-all
+bindkey '^T' peco-history-selection-from-remote-all
 ```
