@@ -7,35 +7,42 @@
 
 ### API Key
 
-Edit env.yaml from env.sample.yaml and set a API Key.
+Create your API key and write to env.yaml. The API Key will used in Cloud Function to authenticate requests from your shell.
 
 ```
-cp env.sample.yaml env.yaml
-vim env.yaml
+ruby -rsecurerandom -e 'puts "APIKEY: #{SecureRandom.hex}"' > env.yaml
 ```
+
+Then, Set your API to your .zshrc.
 
 ```
 # env.yaml
-APIKEY: yo
+APIKEY: 22f4470cab2f9133ed8340354287d979
 # In your .zshrc
-POST_SHELL_HISTORY_APIKEY=yo
+POST_SHELL_HISTORY_APIKEY=22f4470cab2f9133ed8340354287d979
 ```
 
 ### Deploy
 
+`make deploy` will
+
+- Create a GCP project named shell-history-`whoami`.
+- Create a Clound Function
+- Create indices for DataStore
+
 ```
-make deploy
-make index
+make project
 ```
 
-`make deploy` will print `httpsTrigger`.  Set the url root to `POST_SHELL_HISTTORY_APIROOT`.
+`make deploy` will print `httpsTrigger`.  Then, set the url root to `POST_SHELL_HISTTORY_APIROOT` in your .zshrc. Note that `APIROOT` doesn't have last `/`.
+
 ```
 # Output
 httpsTrigger:
-  url: https://asia-northeast1-shell-history2.cloudfunctions.net/accept
+  url: https://asia-northeast1-shell-history-hitorde909.cloudfunctions.net/accept
 
 # In your .zshrc
-POST_SHELL_HISTORY_APIROOT=https://asia-northeast1-shell-history2.cloudfunctions.net
+POST_SHELL_HISTORY_APIROOT=https://asia-northeast1-shell-history-hitode909.cloudfunctions.net
   ```
 
 ### In your .zshrc
@@ -48,7 +55,7 @@ export POST_SHELL_HISTORY_APIKEY=***
 source ~/dev/github.com/hitode909/post-shell-history-to-gcloud/hooks.sh
 ```
 
-Set the key to execute complement.
+And set the keybinds to execute complement.
 
 ```
 # Fetch history from current directory
