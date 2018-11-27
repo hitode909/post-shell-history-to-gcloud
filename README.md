@@ -50,7 +50,7 @@ POST_SHELL_HISTORY_APIROOT=https://asia-northeast1-shell-history-hitode909.cloud
 Set environment variables and load hooks.
 
 ```
-export POST_EHSLL_HISTTORY_APIROOT=https://***.cloudfunctions.net
+export POST_SHELL_HISTORY_APIROOT=https://***.cloudfunctions.net
 export POST_SHELL_HISTORY_APIKEY=***
 source ~/dev/github.com/hitode909/post-shell-history-to-gcloud/hooks.sh
 ```
