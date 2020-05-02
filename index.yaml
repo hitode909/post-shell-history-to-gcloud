@@ -4,3 +4,4 @@ indexes:
   - name: pwd
   - name: timestamp
     direction: desc
+  - name: command
