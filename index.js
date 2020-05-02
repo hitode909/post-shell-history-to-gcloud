@@ -3,12 +3,22 @@ function doPost(req, res) {
 
   const entityToSave = createEntityToSave(datastore, req);
 
-  const q = datastore.createQuery('History').filter('pwd', '=', req.body.pwd).filter('command', '=', req.body.command).select('__key__');
+  const q = datastore.createQuery('History').order('timestamp', { descending: true, }).filter('pwd', '=', req.body.pwd);
+  const knownCommands = {};
+  knownCommands[req.body.command] = true;
   q.run(function (err, entities, info) {
-    const keys = entities.map((entity) => {
-      return entity[datastore.KEY];
-    });
-    console.log(keys);
+    const keysToDelete = [];
+    for (const entity of entities) {
+      if (knownCommands[entity.command]) {
+        keysToDelete.push(entity[datastore.KEY]);
+        console.log(entity);
+      }
+      knownCommands[entity.command] = true;
+      if (keysToDelete.length > 10) {
+        break;
+      }
+    }
+    console.log(keysToDelete);
 
     const transaction = datastore.transaction();
     transaction.run((error) => {
@@ -17,7 +27,8 @@ function doPost(req, res) {
         res.status(500).send(err);
         return;
       }
-      transaction.delete(keys);
+      console.log(`delete ${keysToDelete.length} items`);
+      transaction.delete(keysToDelete);
       transaction.save(entityToSave);
       transaction.commit((err) => {
         if (err) {
