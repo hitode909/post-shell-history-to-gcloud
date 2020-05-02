@@ -12,17 +12,13 @@ function doPost(req, res) {
 
 function createEntityToSave(datastore, req) {
   const key = datastore.key('History');
-  const data = [];
-  req.body.timestamp = new Date();
-  Object.keys(req.body).forEach(key => {
-    data.push({
-      name: key,
-      value: req.body[key],
-    });
-  });
   return {
     key: key,
-    data: req.body,
+    data: {
+      timestamp: new Date(),
+      pwd: req.body.pwd,
+      command: req.body.command,
+    },
   };
 }
 
