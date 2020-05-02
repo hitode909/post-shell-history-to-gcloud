@@ -6,40 +6,28 @@ async function doPost(req, res) {
   const q = datastore.createQuery('History').order('timestamp', { descending: true, }).filter('pwd', '=', req.body.pwd);
   const knownCommands = {};
   knownCommands[req.body.command] = true;
-  q.run(function (err, entities, info) {
-    const keysToDelete = [];
-    for (const entity of entities) {
-      if (knownCommands[entity.command]) {
-        keysToDelete.push(entity[datastore.KEY]);
-        console.log(entity);
-      }
-      knownCommands[entity.command] = true;
-      if (keysToDelete.length > 10) {
-        break;
-      }
+  const entities = (await q.run())[0];
+  const keysToDelete = [];
+  for (const entity of entities) {
+    if (knownCommands[entity.command]) {
+      keysToDelete.push(entity[datastore.KEY]);
+      console.log(entity);
     }
-    console.log(keysToDelete);
+    knownCommands[entity.command] = true;
+    if (keysToDelete.length > 10) {
+      break;
+    }
+  }
+  console.log(keysToDelete);
 
-    const transaction = datastore.transaction();
-    transaction.run((error) => {
-      if (error) {
-        console.log(error);
-        res.status(500).send(err);
-        return;
-      }
-      console.log(`delete ${keysToDelete.length} items`);
-      transaction.delete(keysToDelete);
-      transaction.save(entityToSave);
-      transaction.commit((err) => {
-        if (err) {
-          console.error(err);
-          res.status(500).send(err);
-          return;
-        }
-        res.status(200).send('OK');
-      });
-    });
-  });
+  const transaction = datastore.transaction();
+  await transaction.run();
+
+  console.log(`delete ${keysToDelete.length} items`);
+  transaction.delete(keysToDelete);
+  transaction.save(entityToSave);
+  await transaction.commit();
+  res.status(200).send('OK');
 }
 
 function createEntityToSave(datastore, req) {
