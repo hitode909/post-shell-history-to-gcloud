@@ -1,4 +1,4 @@
-function doPost(req, res) {
+async function doPost(req, res) {
   const datastore = require('@google-cloud/datastore')();
 
   const entityToSave = createEntityToSave(datastore, req);
@@ -54,7 +54,7 @@ function createEntityToSave(datastore, req) {
   };
 }
 
-function doGet(req, res) {
+async function doGet(req, res) {
   const datastore = require('@google-cloud/datastore')();
 
   let q = datastore.createQuery('History').order('timestamp', { descending: true, });
@@ -62,10 +62,9 @@ function doGet(req, res) {
   if (pwd) {
     q = q.filter('pwd', '=', pwd);
   }
-  q.run(function (err, entities, info) {
-    console.log(err);
-    res.status(200).send(entities);
-  });
+  const data = await q.run();
+  const entities = data[0];
+  res.status(200).send(entities);
 }
 
 exports.accept = async (req, res) => {
@@ -76,9 +75,9 @@ exports.accept = async (req, res) => {
   }
 
   if (req.method === 'POST') {
-    return doPost(req, res);
+    return await doPost(req, res);
   }
   if (req.method === 'GET') {
-    doGet(req, res);
+    return await doGet(req, res);
   }
 };
