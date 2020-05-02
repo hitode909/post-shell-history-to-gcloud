@@ -2,11 +2,32 @@ function doPost(req, res) {
   const datastore = require('@google-cloud/datastore')();
 
   const entityToSave = createEntityToSave(datastore, req);
-  datastore.save(entityToSave).then(() => {
-    res.status(200).send('OK');
-  }).catch(err => {
-    console.error(err);
-    res.status(500).send(err);
+
+  const q = datastore.createQuery('History').filter('pwd', '=', req.body.pwd).filter('command', '=', req.body.command).select('__key__');
+  q.run(function (err, entities, info) {
+    const keys = entities.map((entity) => {
+      return entity[datastore.KEY];
+    });
+    console.log(keys);
+
+    const transaction = datastore.transaction();
+    transaction.run((error) => {
+      if (error) {
+        console.log(error);
+        res.status(500).send(err);
+        return;
+      }
+      transaction.delete(keys);
+      transaction.save(entityToSave);
+      transaction.commit((err) => {
+        if (err) {
+          console.error(err);
+          res.status(500).send(err);
+          return;
+        }
+        res.status(200).send('OK');
+      });
+    });
   });
 }
 
